@@ -106,6 +106,50 @@ behavioral-fingerprint-anomaly/
 ├── environment.yml
 └── README.md
 ---
+## Behavioral Session Monitor
+
+A fraud analyst console that simulates how this model operates in a real deployment.
+Rather than making hard block/allow decisions, the system routes each session to a
+risk tier for human review — mirroring how behavioral biometrics is actually used
+in production at companies like BioCatch, Sardine, and NeuroID.
+
+### How it works
+
+Sessions arrive one at a time in mixed order — legitimate and impostor interleaved.
+The system scores each session against the enrolled user's behavioral profile and
+routes it to one of three tiers:
+
+| Tier | Meaning | Action |
+|---|---|---|
+| 🟢 CLEAR | Below low-FRR threshold — almost certainly the real user | Pass through, no action |
+| 🟡 REVIEW | Uncertain — behavioral signal is ambiguous | Route to analyst queue |
+| 🔴 ESCALATE | Above low-FAR threshold — almost certainly an impostor | Freeze session, alert team |
+
+### What the analyst sees
+
+- **Anomaly score bar** — visual indicator of how far the session deviates from normal
+- **Feature deviation chart** — which specific behavioral features drove the score
+- **Review queue** — flagged sessions with feature breakdown and Confirm/False Alarm buttons
+- **Operations dashboard** — live metrics: sessions processed, flag rate, false positive rate
+
+### Why this framing matters
+
+The model's EER of ~11% means it will make mistakes. In a hard block/allow system
+that's a problem. In a triage system it's acceptable — the model's job is to surface
+suspicious sessions efficiently so human investigators focus their attention where it
+matters, not to replace human judgment entirely.
+
+This is how behavioral anomaly detection actually operates at scale.
+
+### Running the app
+
+```bash
+# Generate features first
+# Run notebooks/01_eda.ipynb and notebooks/02_feature_engineering.ipynb
+
+# Then launch
+streamlit run app.py
+```
 
 ## Setup
 
